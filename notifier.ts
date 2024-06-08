@@ -42,7 +42,7 @@ const main = async () => {
               );
               await bot.api.sendMessage(
                 databasePosition.tg_id,
-                `Position ID: ${databasePosition.position_id} has moved out of range. Current tick is ${currentTick}, while your range is ${onchainPosition.position.tickLower} -> ${onchainPosition.position.tickUpper}`,
+                `Nile CL position #${databasePosition.position_id} (https://www.nile.build/liquidity/v2/${databasePosition.position_id}) has moved out of range.`,
               );
               console.log(`Sent message for ${databasePosition.tg_id}`);
             }
@@ -54,7 +54,7 @@ const main = async () => {
               );
               await bot.api.sendMessage(
                 databasePosition.tg_id,
-                `Position ID: ${databasePosition.position_id} has moved into range. Current tick is ${currentTick}, while your range is ${onchainPosition.position.tickLower} -> ${onchainPosition.position.tickUpper}`,
+                `Nile CL position #${databasePosition.position_id} (https://www.nile.build/liquidity/v2/${databasePosition.position_id}) has moved into range.`,
               );
               console.log(`Sent message for ${databasePosition.tg_id}`);
             }

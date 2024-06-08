@@ -18,6 +18,7 @@ bot.command("track", async (ctx) => {
     await ctx.reply("No user id.");
     return;
   }
+  const username = ctx.message?.from.username;
   const args = ctx.match;
   const positionId = Number(args);
   if (!args || !(Number.isInteger(positionId) && positionId > 0)) {
@@ -46,9 +47,9 @@ bot.command("track", async (ctx) => {
       const inRange =
         onChainPosition.position!.tickLower <= slot0[1] &&
         onChainPosition.position!.tickUpper >= slot0[1];
-      await insertPositionIntoDatabase(positionId, userId.toString(), inRange);
+      await insertPositionIntoDatabase(positionId, userId.toString(), inRange, username!.toString());
       await ctx.reply(
-        `Now tracking position ${positionId}. Tick Lower: ${onChainPosition.position!.tickLower}, Tick Upper: ${onChainPosition.position!.tickUpper}, Current Tick: ${slot0[1]}`,
+        `Now tracking Nile CL position ${positionId} (https://www.nile.build/liquidity/v2/${positionId}). It is currently ${inRange ? 'in range.' : 'out of range.'}`,
       );
     } else {
       // TODO: Check if row contains TG user id. If it doesn't, then insert row into `positions`.

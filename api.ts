@@ -106,9 +106,11 @@ export const insertPositionIntoDatabase = async (
   positionId: number,
   tgId: string,
   inRange: boolean,
+  username: string
 ) => {
-  await pool.query(`INSERT INTO positions VALUES ($1, $2, $3, $4)`, [
+  await pool.query(`INSERT INTO positions VALUES ($1, $2, $3, $4, $5)`, [
     tgId,
+    username,
     positionId,
     false,
     inRange,
