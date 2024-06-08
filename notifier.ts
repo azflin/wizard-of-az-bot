@@ -9,7 +9,8 @@ import {
 } from "./api";
 import { Bot } from "grammy";
 
-const INTERVAL = 30000;
+// every 2 minutes, run
+const INTERVAL = 120000;
 
 const main = async () => {
   const bot = new Bot(process.env.BOT_KEY || "");

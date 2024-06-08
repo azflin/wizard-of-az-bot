@@ -10,7 +10,7 @@ import {
 
 const bot = new Bot(process.env.BOT_KEY || "");
 
-bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
+bot.command("start", (ctx) => ctx.reply("Welcome to NileBot! Currently we support tracking when your Nile (https://www.nile.build/liquidity) CL positions get out of (and back into) range. Made by AzFlin (https://twitter.com/AzFlin)."));
 
 bot.command("track", async (ctx) => {
   const userId = ctx.message?.from.id;
@@ -22,7 +22,7 @@ bot.command("track", async (ctx) => {
   const args = ctx.match;
   const positionId = Number(args);
   if (!args || !(Number.isInteger(positionId) && positionId > 0)) {
-    await ctx.reply("Must provide a Nile position id.");
+    await ctx.reply("Must provide a Nile position id, ie /track 71255.");
     return;
   }
 
@@ -61,12 +61,16 @@ bot.command("track", async (ctx) => {
   }
 });
 
+bot.command("help", async (ctx) => {
+  await ctx.reply("This bot will send you a message when your tracked Nile (https://twitter.com/NileExchange) concentrated liquidity positions move out of range. Type /track <position-id> to track a position. Contact https://twitter.com/AzFlin for any questions!");
+})
+
 bot.catch((err) => {
   const ctx = err.ctx;
   console.error(`Error while handling update ${ctx.update.update_id}: ${(new Date()).toISOString()} ${ctx.from?.username}`);
   const e = err.error;
   console.error("Error:", e);
   ctx.reply(`Error: ${e}`)
-})
+});
 
 bot.start();
