@@ -86,17 +86,18 @@ export const getPoolSlot0 = async (
 
 export const getPositionsFromDatabase = async (positionId: number) => {
   let result = await pool.query(
-    `SELECT tg_id, position_id, burned FROM positions WHERE position_id = $1;`,
+    `SELECT tg_id, position_id, burned FROM positions WHERE position_id = $1 AND burned IS FALSE;`,
     [positionId],
   );
   return result.rows;
 };
 
+// Get all non burned positions from the database
 export const getAllPositionsFromDatabase = async (): Promise<
   { tg_id: string; position_id: number; burned: boolean; in_range: boolean }[]
 > => {
   let result = await pool.query(
-    `SELECT tg_id, position_id, burned, in_range FROM positions;`,
+    `SELECT tg_id, position_id, burned, in_range FROM positions WHERE burned IS FALSE;`,
   );
   return result.rows;
 };
@@ -123,3 +124,12 @@ export const updateDatabasePositionInRange = async (
     [inRange, positionId],
   );
 };
+
+export const updateDatabasePositionBurned = async (
+  positionId: number
+) => {
+  await pool.query(
+    `UPDATE positions SET burned = TRUE WHERE position_id = $1`,
+    [positionId],
+  );
+}
