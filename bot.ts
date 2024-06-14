@@ -10,7 +10,11 @@ import {
 
 const bot = new Bot(process.env.BOT_KEY || "");
 
-bot.command("start", (ctx) => ctx.reply("Welcome to NileBot! Currently we support tracking when your Nile (https://www.nile.build/liquidity) CL positions get out of (and back into) range. Made by AzFlin (https://twitter.com/AzFlin)."));
+bot.command("start", (ctx) =>
+  ctx.reply(
+    "Welcome to NileBot! Currently we support tracking when your Nile (https://www.nile.build/liquidity) CL positions get out of (and back into) range. Made by AzFlin (https://twitter.com/AzFlin).",
+  ),
+);
 
 bot.command("track", async (ctx) => {
   const userId = ctx.message?.from.id;
@@ -47,9 +51,14 @@ bot.command("track", async (ctx) => {
       const inRange =
         onChainPosition.position!.tickLower <= slot0[1] &&
         onChainPosition.position!.tickUpper >= slot0[1];
-      await insertPositionIntoDatabase(positionId, userId.toString(), inRange, username!.toString());
+      await insertPositionIntoDatabase(
+        positionId,
+        userId.toString(),
+        inRange,
+        username!.toString(),
+      );
       await ctx.reply(
-        `Now tracking Nile CL position ${positionId} (https://www.nile.build/liquidity/v2/${positionId}). It is currently ${inRange ? 'in range.' : 'out of range.'}`,
+        `Now tracking Nile ${onChainPosition.token0Symbol}/${onChainPosition.token1Symbol} CL position ${positionId} (https://www.nile.build/liquidity/v2/${positionId}). It is currently ${inRange ? "in range." : "out of range."}`,
       );
     } else {
       // TODO: Check if row contains TG user id. If it doesn't, then insert row into `positions`.
@@ -62,15 +71,19 @@ bot.command("track", async (ctx) => {
 });
 
 bot.command("help", async (ctx) => {
-  await ctx.reply("This bot will send you a message when your tracked Nile (https://twitter.com/NileExchange) concentrated liquidity positions move out of range. Type /track <position-id> to track a position. Contact https://twitter.com/AzFlin for any questions!");
-})
+  await ctx.reply(
+    "This bot will send you a message when your tracked Nile (https://twitter.com/NileExchange) concentrated liquidity positions move out of range. Type /track <position-id> to track a position. Contact https://twitter.com/AzFlin for any questions!",
+  );
+});
 
 bot.catch((err) => {
   const ctx = err.ctx;
-  console.error(`Error while handling update ${ctx.update.update_id}: ${(new Date()).toISOString()} ${ctx.from?.username}`);
+  console.error(
+    `Error while handling update ${ctx.update.update_id}: ${new Date().toISOString()} ${ctx.from?.username}`,
+  );
   const e = err.error;
   console.error("Error:", e);
-  ctx.reply(`Error: ${e}`)
+  ctx.reply(`Error: ${e}`);
 });
 
 bot.start();

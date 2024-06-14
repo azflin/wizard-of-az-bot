@@ -3,6 +3,7 @@ dotenv.config({ path: __dirname + "/.env" });
 import { ethers } from "ethers";
 import NonFungiblePositionManager from "./abi/NonFungiblePositionManager.json";
 import ClPool from "./abi/ClPool.json";
+import ERC20 from "./abi/ERC20.json";
 import { Pool } from "@uniswap/v3-sdk";
 import { Token } from "@uniswap/sdk-core";
 import { Pool as PgPool } from "pg";
@@ -42,10 +43,26 @@ export const getPositionFromChain = async (
     token1: string;
     fee: number;
   };
+  token0Symbol?: string;
+  token1Symbol?: string;
 }> => {
   let position;
+  let token0Symbol;
+  let token1Symbol;
   try {
     position = await nfpmContract.positions(positionId);
+    const token0Contract = new ethers.Contract(
+      position.token0,
+      ERC20,
+      provider,
+    );
+    token0Symbol = await token0Contract.symbol();
+    const token1Contract = new ethers.Contract(
+      position.token1,
+      ERC20,
+      provider,
+    );
+    token1Symbol = await token1Contract.symbol();
   } catch (e) {
     const message = (e as Error).message;
     if (message.includes("!VALID ID")) {
@@ -55,7 +72,7 @@ export const getPositionFromChain = async (
       return { status: "error" };
     }
   }
-  return { status: "success", position };
+  return { status: "success", position, token0Symbol, token1Symbol };
 };
 
 // slot0[1] is tick
@@ -106,7 +123,7 @@ export const insertPositionIntoDatabase = async (
   positionId: number,
   tgId: string,
   inRange: boolean,
-  username: string
+  username: string,
 ) => {
   await pool.query(`INSERT INTO positions VALUES ($1, $2, $3, $4, $5)`, [
     tgId,
@@ -127,11 +144,9 @@ export const updateDatabasePositionInRange = async (
   );
 };
 
-export const updateDatabasePositionBurned = async (
-  positionId: number
-) => {
+export const updateDatabasePositionBurned = async (positionId: number) => {
   await pool.query(
     `UPDATE positions SET burned = TRUE WHERE position_id = $1`,
     [positionId],
   );
-}
+};

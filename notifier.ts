@@ -5,7 +5,7 @@ import {
   getAllPositionsFromDatabase,
   getPoolSlot0,
   updateDatabasePositionInRange,
-  updateDatabasePositionBurned
+  updateDatabasePositionBurned,
 } from "./api";
 import { Bot } from "grammy";
 
@@ -61,9 +61,11 @@ const main = async () => {
             }
           }
         } else {
-          if (onchainPosition.status == 'burned') {
+          if (onchainPosition.status == "burned") {
             await updateDatabasePositionBurned(databasePosition.position_id);
-            console.log(`Position ${databasePosition.position_id} has been burned.`);
+            console.log(
+              `Position ${databasePosition.position_id} has been burned.`,
+            );
           }
         }
       }
