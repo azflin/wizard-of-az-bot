@@ -8,7 +8,7 @@ import {
   insertPositionIntoDatabase,
   updateDatabasePositionBurned,
   removePositionFromDatabase,
-  getUserTrackedPools // Import the new function
+  getUserTrackedPools
 } from "./api";
 
 const bot = new Bot(process.env.BOT_KEY || "");
@@ -124,8 +124,13 @@ bot.command("untrack", async (ctx) => {
   const userTrackingPosition = databasePositions.some((pos) => pos.tg_id === userId.toString());
 
   if (userTrackingPosition) {
-    await removePositionFromDatabase(positionId, userId.toString(), exchange);
-    await ctx.reply(`Stopped tracking ${exchange} CL position ${positionId} for you.`);
+    const onChainPosition = await getPositionFromChain(positionId, exchange);
+    if (onChainPosition.status === "success") {
+      await removePositionFromDatabase(positionId, userId.toString(), exchange);
+      await ctx.reply(`Stopped tracking ${exchange} ${onChainPosition.token0Symbol}/${onChainPosition.token1Symbol} CL position ${positionId} for you.`);
+    } else {
+      await ctx.reply("Error fetching position data. Please try again.");
+    }
   } else {
     await ctx.reply("You are not tracking this position.");
   }
@@ -144,9 +149,14 @@ bot.command("pools", async (ctx) => {
     await ctx.reply("You are not tracking any pools.");
   } else {
     let response = "You are tracking the following pools:\n";
-    trackedPools.forEach((pool) => {
-      response += `- Position ID: ${pool.position_id}, Exchange: ${pool.exchange}\n`;
-    });
+    for (const pool of trackedPools) {
+      const onChainPosition = await getPositionFromChain(pool.position_id, pool.exchange);
+      if (onChainPosition.status === "success") {
+        response += `- Position ID: ${pool.position_id}, Exchange: ${pool.exchange}, Tokens: ${onChainPosition.token0Symbol}/${onChainPosition.token1Symbol}\n`;
+      } else {
+        response += `- Position ID: ${pool.position_id}, Exchange: ${pool.exchange}, Tokens: Error fetching token symbols\n`;
+      }
+    }
     await ctx.reply(response);
   }
 });
