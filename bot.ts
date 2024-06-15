@@ -15,7 +15,10 @@ const bot = new Bot(process.env.BOT_KEY || "");
 
 bot.command("start", (ctx) =>
   ctx.reply(
-    "Welcome to KingdomBot! Currently we support tracking when your Nile, Nuri, Pharaoh, and Ra CL positions get out of (and back into) range. Made by AzFlin (https://twitter.com/AzFlin).",
+    "Welcome to KingdomBot!\n" +  
+    "Currently we support tracking when your Nile, Nuri, Pharaoh, Cleo, and Ra CL positions get out of (and back into) range.\n\n" +
+    "Made by AzFlin (https://twitter.com/AzFlin).\n\n" +
+    "Type /commands to see the list of available commands.",
   ),
 );
 
@@ -161,9 +164,24 @@ bot.command("pools", async (ctx) => {
   }
 });
 
+bot.command("commands", async (ctx) => {
+  await ctx.reply(
+    "Available commands:\n" +
+    "/start - Welcome message\n" +
+    "/track <position-id> <exchange-name> - Track a position\n" +
+    "/untrack <position-id> <exchange-name> - Stop tracking a position\n" +
+    "/pools - List all your tracked pools\n" +
+    "/help - Get help about the bot\n" +
+    "/commands - List all available commands\n\n" + 
+    "exchanges: nile, nuri, ra, cleo, pharaoh"
+  );
+});
+
 bot.command("help", async (ctx) => {
   await ctx.reply(
-    "This bot will send you a message when your tracked CL positions move out of range. Type /track <position-id> <exchange-name> to track a position. Type /untrack <position-id> <exchange-name> to stop tracking a position. Type /pools to list all your tracked pools. Contact https://twitter.com/AzFlin for any questions!",
+    "This bot will send you a message when your tracked CL positions move out of range.\n\n" + 
+    "Type /commands for the command list.\n\n" + 
+    "Contact https://twitter.com/AzFlin for any questions!",
   );
 });
 
