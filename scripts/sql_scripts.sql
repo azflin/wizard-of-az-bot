@@ -4,6 +4,6 @@ CREATE TABLE IF NOT EXISTS positions
     username text,
     position_id integer PRIMARY KEY,
     burned boolean,
-    in_range boolean
+    in_range boolean,
+    exchange text
 );
-DROP TABLE positions;
