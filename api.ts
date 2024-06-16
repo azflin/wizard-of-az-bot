@@ -158,3 +158,10 @@ export const getUserTrackedPools = async (tgId: string) => {
   );
   return result.rows;
 };
+
+export const removeAllPositionsFromDatabase = async (tgId: string) => {
+  await pool.query(
+    `DELETE FROM positions WHERE tg_id = $1`,
+    [tgId]
+  );
+};

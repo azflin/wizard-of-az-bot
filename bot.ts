@@ -8,6 +8,7 @@ import {
   insertPositionIntoDatabase,
   updateDatabasePositionBurned,
   removePositionFromDatabase,
+  removeAllPositionsFromDatabase,
   getUserTrackedPools
 } from "./api";
 
@@ -16,7 +17,7 @@ const bot = new Bot(process.env.BOT_KEY || "");
 bot.command("start", (ctx) =>
   ctx.reply(
     "Welcome to KingdomBot!\n" +  
-    "Currently we support tracking when your Nile, Nuri, Pharaoh, Cleo, and Ra CL positions get out of (and back into) range.\n\n" +
+    "Currently we support tracking when your Ramses, Nile, Nuri, Pharaoh, Cleo, and Ra CL positions get out of (and back into) range.\n\n" +
     "Made by AzFlin (https://twitter.com/AzFlin).\n\n" +
     "Type /commands to see the list of available commands.",
   ),
@@ -110,8 +111,13 @@ bot.command("untrack", async (ctx) => {
     return;
   }
   const args = ctx.match?.split(" ");
-  if (!args || args.length < 2) {
-    await ctx.reply("Must provide a position id and exchange name, ie /untrack 71255 nile.");
+  if (args.length === 1 && args[0] === "all") {
+    await removeAllPositionsFromDatabase(userId.toString());
+    await ctx.reply("Stopped tracking all positions for you.");
+    return;
+  }
+  if (args.length < 2) {
+    await ctx.reply("Must provide a position id and exchange name, ie /untrack 71255 nile or use /untrack all to stop tracking all positions.");
     return;
   }
 
@@ -170,6 +176,7 @@ bot.command("commands", async (ctx) => {
     "/start - Welcome message\n" +
     "/track <position-id> <exchange-name> - Track a position\n" +
     "/untrack <position-id> <exchange-name> - Stop tracking a position\n" +
+    "/untrack all - Stop tracking all positions\n" +
     "/pools - List all your tracked pools\n" +
     "/help - Get help about the bot\n" +
     "/commands - List all available commands\n\n" + 
