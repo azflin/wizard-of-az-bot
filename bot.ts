@@ -161,9 +161,10 @@ bot.command("pools", async (ctx) => {
     for (const pool of trackedPools) {
       const onChainPosition = await getPositionFromChain(pool.position_id, pool.exchange);
       if (onChainPosition.status === "success") {
-        response += `- Position ID: ${pool.position_id}, Exchange: ${pool.exchange}, Tokens: ${onChainPosition.token0Symbol}/${onChainPosition.token1Symbol}\n`;
+        const inRangeText = pool.in_range ? "In Range" : "Out of Range";
+        response += `- ${onChainPosition.token0Symbol}/${onChainPosition.token1Symbol} on ${pool.exchange} (#${pool.position_id}), ${inRangeText}\n`;
       } else {
-        response += `- Position ID: ${pool.position_id}, Exchange: ${pool.exchange}, Tokens: Error fetching token symbols\n`;
+        response += `- ${pool.exchange} (#${pool.position_id}), Error fetching token symbols\n`;
       }
     }
     await ctx.reply(response);
@@ -180,7 +181,7 @@ bot.command("commands", async (ctx) => {
     "/pools - List all your tracked pools\n" +
     "/help - Get help about the bot\n" +
     "/commands - List all available commands\n\n" + 
-    "exchanges: nile, nuri, ra, cleo, pharaoh"
+    "exchanges: ramses, nile, nuri, ra, cleo, pharaoh"
   );
 });
 
