@@ -153,7 +153,7 @@ export const removePositionFromDatabase = async (
 
 export const getUserTrackedPools = async (tgId: string) => {
   const result = await pool.query(
-    `SELECT position_id, exchange FROM positions WHERE tg_id = $1 AND burned IS FALSE`,
+    `SELECT position_id, in_range, exchange FROM positions WHERE tg_id = $1 AND burned IS FALSE`,
     [tgId]
   );
   return result.rows;
