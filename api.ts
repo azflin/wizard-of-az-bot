@@ -56,7 +56,7 @@ export const getPositionFromChain = async (
     token1Symbol = await token1Contract.symbol();
   } catch (e) {
     const message = (e as Error).message;
-    if (message.includes("!VALID ID")) {
+    if (message.includes("!VALID ID") || "Invalid token ID") {
       return { status: "burned" };
     } else {
       console.log(`Error with getPosition: ${e}`);
